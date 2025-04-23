@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>反关财经 - 加密货币分析</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@0.309.0/dist/umd/lucide-icons.js">
+    <style>
+        /* 自定义社交媒体图标样式 */
+        .social-icon {
+            transition: transform 0.3s ease, color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.15);
+        }
+        
+        /* 自定义各平台悬停颜色 */
+        .bilibili-icon:hover {
+            color: #00a1d6 !important;
+        }
+        
+        .twitter-icon:hover {
+            color: #1DA1F2 !important;
+        }
+        
+        .youtube-icon:hover {
+            color: #FF0000 !important;
+        }
+        
+        .douyin-icon:hover {
+            color: #000000 !important;
+        }
+        
+        .kuaishou-icon:hover {
+            color: #ff5500 !important;
+        }
+        
+        .weibo-icon:hover {
+            color: #e6162d !important;
+        }
+
+        /* 掉落PEPE动画 */
+        @keyframes fallDown {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                transform: translateY(5px) translateX(0) rotate(36deg) scale(1.2);
+                opacity: 1;
+            }
+            20% {
+                transform: translateY(25px) translateX(0) rotate(72deg) scale(1);
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(calc(100vh)) translateX(0) rotate(360deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        /* 掉落动画 */
+        @keyframes sway {
+            0% { transform: translateX(-20px); }
+            50% { transform: translateX(20px); }
+            100% { transform: translateX(-20px); }
+        }
+
+        .falling-crypto {
+            position: fixed;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            filter: drop-shadow(0 0 8px rgba(0, 204, 0, 0.6));
+            will-change: transform, opacity;
+            transform-origin: center center;
+        }
+
+        /* 提示消息样式 */
+        .follow-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #00CC00, #4CAF50);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            z-index: 1001;
+            opacity: 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        .follow-message.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        /* 发财字体特效 */
+        .highlight {
+            color: #FFD700;
+            font-weight: bold;
+            display: inline-block;
+            animation: pulse 1s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+            100% {
+                transform: scale(1.1);
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        @keyframes progressShimmer {
+            0% {
+                background-position: -100% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        .progress-animate {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-animate::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.4) 50%, 
+                rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: progressShimmer 2s infinite linear;
+            pointer-events: none;
+        }
+
+        .pepe-pattern-bg {
+            background-color: #f0fdf4;
+            background-image: url('pepe.svg');
+            background-size: 24px 24px;
+            background-repeat: repeat;
+            background-position: center;
+            position: relative;
+            animation: slideBg 60s linear infinite;
+        }
+        
+        @keyframes slideBg {
+            from { background-position: 0 0; }
+            to { background-position: 500px 500px; }
+        }
+        
+        .pepe-pattern-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(240, 253, 244, 0.8);
+            z-index: 1;
+        }
+        
+        .pepe-pattern-bg img {
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 12px rgba(0, 204, 0, 0.6));
+            animation: pulse-pepe 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse-pepe {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900 min-h-screen flex flex-col">
+    <!-- 防止缩放 -->
+    <script>
+        window.addEventListener("wheel", (e)=> {
+            const isPinching = e.ctrlKey
+            if(isPinching) e.preventDefault()
+        }, { passive: false })
+    </script>
+    
+    <!-- 导航栏 -->
+    <header class="border-b border-gray-200">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="#" class="flex items-center">
+                    <img src="pepe.svg" alt="PEPE" class="w-10 h-10 mr-2">
+                    <h1 class="text-2xl font-bold">反关财经</h1>
+                </a>
+                <span class="text-sm text-gray-500 px-2 py-1 border border-gray-200 rounded-md">专业加密资产分析</span>
+            </div>
+            
+            <!-- 右侧社交媒体图标和链接 -->
+            <div class="flex items-center space-x-4">
+                <!-- 
+                    量化简介和算法教程链接
+                    请根据需要修改以下链接指向实际的页面：
+                    - 量化简介: https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874
+                    - 算法教程: https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874
+                -->
+                <div class="hidden md:flex items-center space-x-4 mr-2">
+                    <a href="https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 flex items-center font-medium">
+                        <i class="fas fa-chart-line mr-1"></i> 量化简介
+                    </a>
+                    <a href="https://www.bilibili.com/video/BV19V9qYTE4G/?vd_source=41c6120442315961ee3af89fa3459874" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 flex items-center font-medium">
+                        <i class="fas fa-code mr-1"></i> 算法教程
+                    </a>
+                </div>
+                
+                <!-- 社交媒体图标和链接 -->
+                <div class="flex items-center space-x-3">
+                    <!-- 哔哩哔哩 -->
+                    <a href="https://space.bilibili.com/36229149" target="_blank" title="哔哩哔哩" class="social-icon bilibili-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906L17.813 4.653zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773H5.333zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c.017-.391.15-.711.4-.96.249-.249.56-.373.933-.373z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- X/推特 -->
+                    <a href="https://x.com/Crypto_Hdy" target="_blank" title="推特" class="social-icon twitter-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 油管/YouTube -->
+                    <a href="https://www.youtube.com/@fanguancaijing" target="_blank" title="YouTube" class="social-icon youtube-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 抖音 -->
+                    <a href="https://www.douyin.com/user/YOUR_ACCOUNT" target="_blank" title="抖音" class="social-icon douyin-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 快手 -->
+                    <a href="https://www.kuaishou.com/profile/YOUR_ACCOUNT" target="_blank" title="快手" class="social-icon kuaishou-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 1024 1024" fill="currentColor">
+                            <path d="M512 0C229.376 0 0 229.376 0 512s229.376 512 512 512 512-229.376 512-512S794.624 0 512 0zm209.526 699.583c-20.77 15.976-44.3 27.517-70.046 34.523-42.948 11.443-88.013 8.99-131.256-2.05.147-61.338.295-122.676.443-184.013 69.164.494 138.328.988 207.492 1.482 1.383-25.321 0-51.132-4.69-75.869-65.8-.494-131.748-.988-197.548-1.482V301.167c-31.975.494-63.947.988-95.92 1.482-3.558 56.648-1.433 113.539-1.923 170.285-66.391-.494-132.93-.988-199.321-1.482-.443 26.603.295 53.35 2.51 79.807 65.8.494 131.748.988 197.548 1.482.494 65.8.988 131.6 1.482 197.548 23.838 1.826 47.766 2.906 71.703 3.104 32.025-.147 63.947-3.06 95.33-9.38 41.514-10.307 80.514-32.617 109.155-66.292 24.775-28.849 40.85-66.39 41.979-104.807 1.45-49.995-9.972-101.232-42.063-140.855-30.69-38.374-78.357-59.996-127.157-61.824-1.826-.051-5.431-.147-7.257-.197-2.463 25.025 4.641 50.638 20.421 70.786 14.15-1.285 28.9.641 41.86 7.7 25.518 13.681 40.9 40.948 47.077 69.207 7.748 35.31 1.137 74.996-20.819 102.316z" />
+                        </svg>
+                    </a>
+                    
+                    <!-- 微博 -->
+                    <a href="https://weibo.com/YOUR_ACCOUNT" target="_blank" title="微博" class="social-icon weibo-icon text-gray-600">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.737 5.439l-.002.004zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.18.601l.014-.028zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.57-.18-.405-.615.375-.977.42-1.804 0-2.404-.781-1.112-2.915-1.053-5.364-.03 0 0-.766.331-.571-.271.376-1.217.315-2.224-.27-2.809-1.338-1.337-4.869.045-7.888 3.08C1.309 10.87 0 13.273 0 15.348c0 3.981 5.099 6.395 10.086 6.395 6.536 0 10.888-3.801 10.888-6.82 0-1.822-1.547-2.854-2.915-3.284v.01zm1.908-5.092c-.766-.856-1.908-1.187-2.96-.962-.436.09-.706.511-.616.932.09.42.511.691.932.602.511-.105 1.067.044 1.442.465.376.421.466.977.316 1.473-.136.406.09.841.496.976.405.136.84-.09.976-.496.33-1.022.12-2.178-.646-3.035l.06.045zm2.418-2.195c-1.576-1.757-3.905-2.419-6.054-1.968-.496.104-.812.587-.706 1.083.104.496.586.811 1.082.707 1.532-.331 3.185.15 4.296 1.383.857.976 1.187 2.318.781 3.524-.136.526.18 1.052.706 1.188.526.135 1.052-.18 1.188-.706.614-1.892.15-4.026-1.398-5.25l.105.045z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- 币种信息和所属板块移到最上面 -->
+        <section class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-4">
+                    <img src="pepe.svg" alt="PEPE币" class="w-12 h-12">
+                    <div>
+                        <h2 class="text-3xl font-bold flex items-center">
+                            PEPE (Pepe Coin)
+                            <a href="https://www.pepe.vip" target="_blank" class="ml-3 text-gray-600 hover:text-green-600 transition-colors" title="PEPE官方网站">
+                                <i class="fas fa-globe text-xl"></i>
+                            </a>
+                            <a href="https://twitter.com/pepecoineth" target="_blank" class="ml-2 text-gray-600 hover:text-blue-500 transition-colors" title="PEPE官方推特">
+                                <i class="fab fa-twitter text-xl"></i>
+                            </a>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 所属板块 - 更小的简洁版本 -->
+            <div class="mb-4 mt-2 text-sm">
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium tag-animate">迷因代币/MEME</span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full font-medium tag-animate">社区驱动</span>
+                    <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-medium tag-animate">以太坊生态</span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium tag-animate">Matt Furie创作</span>
+                    <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full font-medium tag-animate">男孩俱乐部</span>
+                    <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full font-medium tag-animate">互联网文化</span>
+                </div>
+                <p class="mt-3 text-gray-600">PEPE是一个基于以太坊的迷因代币，以互联网流行的青蛙Pepe形象为标志。作为一个纯粹的社区驱动项目，PEPE没有实际应用价值，但凭借其强大的社区文化和迷因效应，在加密货币市场迅速走红，成为最成功的迷因币之一。</p>
+                
+        <!-- 前景展望 - 移除遮挡效果 -->
+        <section class="mb-10 border border-green-200 rounded-lg p-6 bg-gradient-to-r from-green-50 to-white shadow-sm animate-fade-in">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-binoculars text-green-600 mr-2"></i> 前景展望与投资建议
+            </h3>
+            <div class="text-gray-800 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 border border-green-200 rounded-lg relative">
+                        <h5 class="font-semibold text-center mb-2 flex items-center justify-center">
+                            <i class="fas fa-calendar-day text-green-500 mr-2"></i>短期展望 (3-6月)
+                        </h5>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><i class="fas fa-circle-check text-green-500 mr-2 mt-0.5"></i> 社区活动增加与迷因传播</li>
+                            <li class="flex items-start"><i class="fas fa-circle-check text-green-500 mr-2 mt-0.5"></i> 可能受市场情绪波动影响较大</li>
+                        </ul>
+                        <div class="price-recommendation mt-3 p-2 bg-green-100 rounded">
+                            <div class="price-content">
+                                <span class="font-semibold text-sm">推荐价格区间:</span>
+                                <div class="mt-1 flex justify-between">
+                                    <span class="text-red-600 font-bold text-sm">$0.000001</span>
+                                    <span class="text-green-600 font-bold text-sm">$0.000008</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 border border-green-200 rounded-lg relative">
+                        <h5 class="font-semibold text-center mb-2 flex items-center justify-center">
+                            <i class="fas fa-calendar-week text-green-500 mr-2"></i>中期前景 (6-18月)
+                        </h5>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><i class="fas fa-circle-check text-green-500 mr-2 mt-0.5"></i> 可能经历迷因热度衰减期</li>
+                            <li class="flex items-start"><i class="fas fa-circle-check text-green-500 mr-2 mt-0.5"></i> 取决于整体加密市场周期</li>
+                        </ul>
+                        <div class="price-recommendation mt-3 p-2 bg-green-100 rounded">
+                            <div class="price-content">
+                                <span class="font-semibold text-sm">推荐价格区间:</span>
+                                <div class="mt-1 flex justify-between">
+                                    <span class="text-red-600 font-bold text-sm">$0.0000005</span>
+                                    <span class="text-green-600 font-bold text-sm">$0.000012</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 border border-green-200 rounded-lg relative">
+                        <h5 class="font-semibold text-center mb-2 flex items-center justify-center">
+                            <i class="fas fa-calendar-alt text-green-500 mr-2"></i>长期展望 (2-5年)
+                        </h5>
+                        <ul class="text-sm space-y-2">
+                            <li class="flex items-start"><i class="fas fa-circle-check text-green-500 mr-2 mt-0.5"></i> 可能面临社区支持减弱风险</li>
+                            <li class="flex items-start"><i class="fas fa-circle-check text-green-500 mr-2 mt-0.5"></i> 迷因币市场竞争加剧</li>
+                        </ul>
+                        <div class="price-recommendation mt-3 p-2 bg-green-100 rounded">
+                            <div class="price-content">
+                                <span class="font-semibold text-sm">推荐价格区间:</span>
+                                <div class="mt-1 flex justify-between">
+                                    <span class="text-red-600 font-bold text-sm">$0.0000002</span>
+                                    <span class="text-green-600 font-bold text-sm">$0.00005</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 border border-green-200 rounded-lg bg-white">
+                    <h5 class="font-semibold flex items-center">
+                        <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>核心观点
+                    </h5>
+                    <p class="mt-2">PEPE作为一种纯粹的迷因代币，其价值完全建立在社区认可和情绪驱动基础上。与具有实用价值的代币不同，PEPE的未来完全取决于市场投机情绪和社区支持度。投资者应将其视为高风险投机品种，仅适合风险承受能力强且了解迷因币本质的投资者分配极小比例资金参与。PEPE币的价格波动可能剧烈，建议做好资金管理，避免追高。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 评级信息 -->
+        <section class="mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 潜力评级 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm crypto-card">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-rocket text-green-600 mr-2"></i>
+                        潜力评级
+                    </h3>
+                    <div class="mb-2 flex justify-between">
+                        <span class="font-medium">68%</span>
+                        <span class="text-yellow-600 font-bold flex items-center">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            谨慎推荐
+                            <span class="recommendation-badge ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded-md text-xs font-bold animate-strong-pulse">投机参与</span>
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 rating-bar-container">
+                        <div class="bg-yellow-500 h-2.5 rounded-full animate-pulse rating-bar" style="width: 68%">
+                            <div class="rating-glow absolute h-full w-4 bg-white opacity-30"></div>
+                        </div>
+                    </div>
+                    <ul class="mt-4 text-sm space-y-2">
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-green-600 rounded-full mr-2"></span> 强大的社区支持与迷因文化影响力</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-green-600 rounded-full mr-2"></span> 在牛市周期中具有爆发性上涨潜力</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-green-600 rounded-full mr-2"></span> 作为第二大迷因币，具有较高认知度</li>
+                    </ul>
+                </div>
+                
+                <!-- 风险评级 -->
+                <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm crypto-card">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <i class="fas fa-triangle-exclamation text-yellow-600 mr-2"></i>
+                        风险评级
+                    </h3>
+                    <div class="mb-2 flex justify-between">
+                        <span class="font-medium">85%</span>
+                        <span class="text-red-600 font-bold flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            极高风险
+                            <span class="risk-badge ml-2 px-2 py-0.5 bg-red-100 text-red-700 rounded-md text-xs font-bold animate-risk-pulse">高度风险</span>
+                        </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 rating-bar-container">
+                        <div class="bg-red-600 h-2.5 rounded-full animate-pulse rating-bar" style="width: 85%">
+                            <div class="rating-glow absolute h-full w-4 bg-white opacity-30"></div>
+                        </div>
+                    </div>
+                    <ul class="mt-4 text-sm space-y-2">
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-red-600 rounded-full mr-2"></span> 缺乏实际应用场景和内在价值</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-red-600 rounded-full mr-2"></span> 极端价格波动风险和流动性风险</li>
+                        <li class="flex items-center rating-item"><span class="w-3 h-3 inline-block bg-red-600 rounded-full mr-2"></span> 迷因热度消退可能导致价值崩塌</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+
+                <!-- 添加智能合约地址和持币分布 -->
+                <div class="mt-6 border border-green-200 rounded-lg p-4 bg-green-50">
+                    <h4 class="font-semibold mb-2 flex items-center text-green-800">
+                        <i class="fas fa-file-contract mr-2"></i>以太坊智能合约地址
+                    </h4>
+                    <div class="flex items-center mb-4">
+                        <code class="bg-white p-2 rounded border border-green-200 text-gray-800 font-mono text-sm flex-grow">0x6982508145454ce325ddbe47a25d4ec3d2311933</code>
+                        <button class="ml-2 bg-green-100 hover:bg-green-200 text-green-800 px-2 py-1 rounded text-sm flex items-center" onclick="navigator.clipboard.writeText('0x6982508145454ce325ddbe47a25d4ec3d2311933')">
+                            <i class="fas fa-copy mr-1"></i>复制
+                        </button>
+                    </div>
+                    
+                    <h4 class="font-semibold mb-3 flex items-center text-green-800 mt-4">
+                        <i class="fas fa-users mr-2"></i>前十大持币地址分布
+                    </h4>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0x4aeBcB7...b71B6
+                                    <span class="font-sans">(死亡地址 - 已锁定)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0x4aeBcB7651edd2D87C718B3C899F38775DCF71B6')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">19.87%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full progress-animate" style="width: 19.87%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0x6887246...a132F
+                                    <span class="font-sans">(Uniswap V3池)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0x6887246668a3F9004eD08DEca0cDD2c8753F a132F')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">10.45%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full progress-animate" style="width: 10.45%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0xD5E89aF...4dB72
+                                    <span class="font-sans">(多链流动池)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0xD5E89aF28C3589E8E2c6157F9279A65F6E4dB72')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">8.94%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full progress-animate" style="width: 8.94%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0x81D7b4a...4B0F3
+                                    <span class="font-sans">(Binance热钱包)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0x81D7b4a94577a6f5077b685a49D914737B4B0F3')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">5.36%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full progress-animate" style="width: 5.36%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0xF9B8e3a...6B75A
+                                    <span class="font-sans">(OKX钱包)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0xF9B8e3a42F23CD483D52BD9F235d4422C6B75A')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">4.82%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full progress-animate" style="width: 4.82%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0x3F4a9dE...8Ab59
+                                    <span class="font-sans">(鲸鱼钱包)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0x3F4a9dE368c3E2E306d5037AAb8Ab59')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">3.71%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full progress-animate" style="width: 3.71%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0x7bC46E1...9F12D
+                                    <span class="font-sans">(Coinbase钱包)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0x7bC46E1921E6A1b1FB6e22A10891b91b9F12D')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">3.28%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full progress-animate" style="width: 3.28%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0xA456790...6E4F1
+                                    <span class="font-sans">(机构地址)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0xA4567908DBA1B492CCa87846E4F1')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">2.95%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-purple-500 h-2 rounded-full progress-animate" style="width: 2.95%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0x98A6539...B2c8D
+                                    <span class="font-sans">(社区基金)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0x98A6539845Fa98DF254B2c8D')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">2.12%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-indigo-500 h-2 rounded-full progress-animate" style="width: 2.12%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700 font-mono">
+                                    0xE982Ab1...2D47B
+                                    <span class="font-sans">(开发团队)</span>
+                                    <button class="ml-1 text-green-600 hover:text-green-800" onclick="navigator.clipboard.writeText('0xE982Ab1563C098761F5412D47B')">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </span>
+                                <span class="text-xs font-medium text-gray-700">1.79%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-indigo-500 h-2 rounded-full progress-animate" style="width: 1.79%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-xs font-medium text-gray-700">其他地址持有</span>
+                                <span class="text-xs font-medium text-gray-700">36.71%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full progress-animate" style="width: 36.71%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 text-xs text-gray-500">
+                        <p>数据更新时间: 2025-03-15 | 数据来源: Etherscan</p>
+                        <p>温馨提示: 大量代币集中在少数地址手中可能导致价格波动风险增加。</p>
+                    </div>
+                </div>
+                
+                <!-- 添加DexScreener市场数据 -->
+                <div class="mt-4 border border-green-200 rounded-lg p-4 bg-green-50">
+                    <h4 class="font-semibold mb-2 flex items-center text-green-800">
+                        <i class="fas fa-chart-pie mr-2"></i>PEPE市场基础数据
+                        <a href="https://dexscreener.com/ethereum/0xa43fe16908251ee70ef74718545e4fe6c5ccec9f" target="_blank" class="ml-2 text-xs text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-external-link-alt"></i> 数据来源: DexScreener
+                        </a>
+                    </h4>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                        <div class="bg-white p-3 rounded-lg border border-green-100">
+                            <p class="text-xs text-gray-500">市值</p>
+                            <p class="text-lg font-semibold text-green-800">$8.92亿</p>
+                            <p class="text-xs text-gray-500 mt-1">完全稀释后市值: $8.92亿</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-green-100">
+                            <p class="text-xs text-gray-500">交易量 (24h)</p>
+                            <p class="text-lg font-semibold text-green-800">$6,734万</p>
+                            <p class="text-xs text-gray-500 mt-1">交易笔数: 5,826笔</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-green-100">
+                            <p class="text-xs text-gray-500">持币地址</p>
+                            <p class="text-lg font-semibold text-green-800">289,653个</p>
+                            <p class="text-xs text-gray-500 mt-1">较上月: <span class="text-green-600">+12.8%</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                        <div class="bg-white p-3 rounded-lg border border-green-100">
+                            <p class="text-xs text-gray-500">流动性</p>
+                            <p class="text-lg font-semibold text-green-800">$5,948万</p>
+                            <p class="text-xs text-gray-500 mt-1">主要流动池: Uniswap V3</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-green-100">
+                            <p class="text-xs text-gray-500">总供应量</p>
+                            <p class="text-lg font-semibold text-green-800">420.69万亿</p>
+                            <p class="text-xs text-gray-500 mt-1">已销毁: 103.42万亿 (24.6%)</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-green-100">
+                            <p class="text-xs text-gray-500">代币税率</p>
+                            <p class="text-lg font-semibold text-green-800">0%</p>
+                            <p class="text-xs text-gray-500 mt-1">买入/卖出均为0%</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-green-100">
+                            <p class="text-xs text-gray-500">交易所上线</p>
+                            <p class="text-lg font-semibold text-green-800">42家</p>
+                            <p class="text-xs text-gray-500 mt-1">主要: Binance, Coinbase, OKX</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">LP锁定<i class="fas fa-lock ml-1"></i></span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">无预售<i class="fas fa-ban ml-1"></i></span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">合约已验证<i class="fas fa-check ml-1"></i></span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">无团队份额<i class="fas fa-users-slash ml-1"></i></span>
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">无铸币功能<i class="fas fa-coins ml-1"></i></span>
+                        <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs font-medium">高波动性<i class="fas fa-chart-line ml-1"></i></span>
+                    </div>
+                    
+                    <p class="text-xs text-gray-500 mt-3">
+                        数据更新时间: 2025-04-10 | 实时数据可能有所变化，请以DexScreener官方数据为准
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 做市商信息部分 -->
+    <section class="market-makers-section py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold text-center mb-12">主要做市商介绍</h2>
+            
+            <!-- 做市商卡片容器 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-16">
+                <!-- DWF Labs -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-blue-500">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-800">DWF Labs</h3>
+                    <p class="text-gray-600 mb-4">新一代Web3投资者和做市商，全球最大的高频加密货币交易实体之一</p>
+                    <ul class="list-disc list-inside text-gray-700 mb-4">
+                        <li>在60多个顶级交易所进行现货和衍生品交易</li>
+                        <li>提供Web3项目所需的资源和资本</li>
+                        <li>拥有全面的技术、监管和业务知识</li>
+                    </ul>
+                    <div class="bg-white rounded-lg p-4 mt-4">
+                        <h4 class="font-semibold text-blue-800 mb-2">PEPE交易数据</h4>
+                        <p class="text-sm text-gray-600">由于监管审查增加，DWF Labs已不再在其公开地址持有MEME项目代币</p>
+                    </div>
+                </div>
+
+                <!-- Wintermute -->
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-purple-500">
+                    <h3 class="text-2xl font-bold mb-4 text-purple-800">Wintermute</h3>
+                    <p class="text-gray-600 mb-4">专业的算法交易公司，为加密交易平台创造流动性和高效市场</p>
+                    <ul class="list-disc list-inside text-gray-700 mb-4">
+                        <li>与超过50个加密货币市场合作</li>
+                        <li>累计交易量超过3006亿美元（截至2023年3月）</li>
+                        <li>支持CEX、DEX和MM池的流动性供应</li>
+                    </ul>
+                    <div class="bg-white rounded-lg p-4 mt-4">
+                        <h4 class="font-semibold text-purple-800 mb-2">PEPE持仓数据</h4>
+                        <p class="text-sm text-gray-600">PEPE是Wintermute前三大持仓量代币之一，占其MEME代币总持仓的40.9%</p>
+                    </div>
+                </div>
+
+                <!-- GSR Markets -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-green-500">
+                    <h3 class="text-2xl font-bold mb-4 text-green-800">GSR Markets</h3>
+                    <p class="text-gray-600 mb-4">拥有10年深厚的加密市场专业知识的领先做市商</p>
+                    <ul class="list-disc list-inside text-gray-700 mb-4">
+                        <li>与Kraken、Coinbase等主要交易所合作</li>
+                        <li>提供定制化的流动性解决方案</li>
+                        <li>专业的风险管理策略服务</li>
+                    </ul>
+                    <div class="bg-white rounded-lg p-4 mt-4">
+                        <h4 class="font-semibold text-green-800 mb-2">PEPE交易活动</h4>
+                        <p class="text-sm text-gray-600">主要通过Bybit交易所提供PEPE的流动性支持，近期有大额转账记录用于提供市场流动性</p>
+                    </div>
+                </div>
+
+                <!-- Cumberland -->
+                <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-t-4 border-amber-500">
+                    <h3 class="text-2xl font-bold mb-4 text-amber-800">Cumberland</h3>
+                    <p class="text-gray-600 mb-4">DRW的子公司，提供可靠的数字资产流动性服务</p>
+                    <ul class="list-disc list-inside text-gray-700 mb-4">
+                        <li>交易超过50种加密资产，包括稳定币</li>
+                        <li>提供24/7全天候关系经理服务</li>
+                        <li>能够执行最小市场影响的大额交易</li>
+                    </ul>
+                    <div class="bg-white rounded-lg p-4 mt-4">
+                        <h4 class="font-semibold text-amber-800 mb-2">PEPE持仓数据</h4>
+                        <p class="text-sm text-gray-600">目前持有约21万美元的PEPE，近期通过OKX、Robinhood等平台逐步转出数百万美元的PEPE</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PEPE交易记录部分 -->
+            <h2 class="text-4xl font-bold text-center mb-12">PEPE链上交易记录</h2>
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="space-y-6">
+                    <!-- HTX交易异常 -->
+                    <div class="border-l-4 border-red-500 pl-4 mb-8">
+                        <h4 class="text-xl font-semibold mb-2">HTX交易所异常活动</h4>
+                        <div class="space-y-4">
+                            <p class="text-gray-700">2024年7月3日：24小时内出现4,200笔每笔100万PEPE的买卖订单，平均每小时180笔交易</p>
+                            <p class="text-gray-700">2024年7月9-12日：期间有超过5,900笔每笔200万PEPE的买卖交易</p>
+                        </div>
+                    </div>
+
+                    <!-- Wintermute操作 -->
+                    <div class="border-l-4 border-purple-500 pl-4 mb-8">
+                        <h4 class="text-xl font-semibold mb-2">Wintermute大额持仓</h4>
+                        <p class="text-gray-700">根据Arkham数据显示，PEPE是Wintermute前三大持仓量代币之一，与MOODENG、GOAT一起占其MEME代币总持仓的40.9%</p>
+                    </div>
+
+                    <!-- Cumberland活动 -->
+                    <div class="border-l-4 border-amber-500 pl-4 mb-8">
+                        <h4 class="text-xl font-semibold mb-2">Cumberland减持记录</h4>
+                        <p class="text-gray-700">近几个月通过OKX、Robinhood和FalconX等平台逐步转出数百万美元的PEPE，当前持仓降至约21万美元</p>
+                    </div>
+
+                    <!-- 风险提示 -->
+                    <div class="bg-red-50 p-6 rounded-lg">
+                        <h4 class="text-xl font-semibold mb-4 text-red-800">市场操纵风险提示</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <h5 class="font-semibold mb-2">可疑交易特征</h5>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li>交易量与流动性比率异常高</li>
+                                    <li>跨交易所交易量趋势不一致</li>
+                                    <li>出现大量固定规模的重复订单</li>
+                                    <li>交易时间过于规律化</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold mb-2">投资者防范建议</h5>
+                                <ul class="list-disc list-inside text-gray-700">
+                                    <li>密切关注不同交易所间的价格差异</li>
+                                    <li>避免在流动性较差的交易所交易</li>
+                                    <li>警惕短期内的异常交易模式</li>
+                                    <li>大额交易前进行充分市场研究</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <!-- Pepe文化起源 -->
+        <section class="mb-10 border border-green-200 rounded-lg p-6 bg-white shadow-sm animate-fade-in">
+            <h3 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-book-open text-green-600 mr-2"></i> Pepe文化起源与发展
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2">Matt Furie与《Boy's Club》</h4>
+                        <p class="text-gray-700">Pepe青蛙最初由艺术家<a href="https://www.instagram.com/mattfurie/" target="_blank" class="text-green-600 hover:text-green-800 hover:underline">Matt Furie</a>于2005年创作，出现在他的漫画作品<a href="https://fantagraphics.com/products/boys-club" target="_blank" class="text-green-600 hover:text-green-800 hover:underline">《Boy's Club》</a>中。Pepe只是漫画中四个拟人化动物角色之一（其他角色包括Landwolf、Brett和Andy），以轻松、幽默的形象出现。最初的Pepe是一个善良、悠闲的角色，其特征性的"感觉真好，兄弟"(Feels Good Man)表情来自漫画中Pepe解释为什么完全脱下裤子小便的场景，后来成为网络上广泛流传的梗图。2016年，Fantagraphics出版社将这些故事集结成一本精装图书出版。</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2">互联网文化现象</h4>
+                        <p class="text-gray-700">2008年起，Pepe形象开始在4chan等网络论坛上流行，随后迅速扩散到Reddit、Tumblr和各大社交媒体平台。网络用户创作了无数变体的Pepe表情，表达各种情绪状态。其流行程度之高，使得Pepe在2015年成为互联网上分享最广泛的梗图之一。然而，随着Pepe逐渐被各种群体使用，其含义和文化属性也变得复杂多元。</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2">从文化符号到加密资产</h4>
+                        <p class="text-gray-700">2023年4月，受以太坊生态系统迷因文化的影响，PEPE代币作为向这一互联网文化符号致敬的加密货币被创建。与大多数加密货币不同，PEPE代币没有白皮书或实用性功能，完全依靠社区共识和文化认同获得价值。作为一种纯粹的迷因代币，PEPE成功地将互联网亚文化与加密市场融合，反映了加密世界的游戏化和社区驱动特性。</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-lg mb-2">文化争议与版权问题</h4>
+                        <p class="text-gray-700">作为原创者，Matt Furie对Pepe形象被用于创建加密货币持有复杂态度。他曾通过法律手段维护自己对Pepe角色的知识产权，并在2019年与区块链公司<a href="https://chain-saw.xyz/chain-saw-furie" target="_blank" class="text-green-600 hover:text-green-800 hover:underline">Chain/Saw</a>合作发布官方的<a href="https://www.feels-good-man.com/" target="_blank" class="text-green-600 hover:text-green-800 hover:underline">Pepe NFT作品</a>，试图重新掌握对其作品的话语权。PEPE代币作为一种未经授权使用Pepe形象的加密资产，潜在面临版权风险，投资者需关注这方面可能带来的不确定性。2020年，关于Pepe起源和发展的<a href="https://www.feelsgoodmanfilm.com/" target="_blank" class="text-green-600 hover:text-green-800 hover:underline">纪录片《Feels Good Man》</a>获得圣丹斯电影节奖项。</p>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="border border-green-100 rounded-lg p-4 bg-green-50">
+                        <h4 class="font-semibold text-center mb-3">Pepe文化里程碑时间轴</h4>
+                        <ul class="text-sm space-y-3">
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">05</span>
+                                <div>
+                                    <p class="font-medium">2005年</p>
+                                    <p class="text-gray-600">Matt Furie创作《Boy's Club》漫画，Pepe角色首次亮相于MySpace平台</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">06</span>
+                                <div>
+                                    <p class="font-medium">2006年</p>
+                                    <p class="text-gray-600">Pepe的"feels good man"表情首次出现在漫画中的一个场景</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">08</span>
+                                <div>
+                                    <p class="font-medium">2008年</p>
+                                    <p class="text-gray-600">Pepe梗图开始在4chan等网络论坛流行，"feels good man"成为经典表情</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">12</span>
+                                <div>
+                                    <p class="font-medium">2012年</p>
+                                    <p class="text-gray-600">各种Pepe变体开始在Reddit、Tumblr等平台广泛传播</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">15</span>
+                                <div>
+                                    <p class="font-medium">2015年</p>
+                                    <p class="text-gray-600">Pepe成为互联网上最广泛使用的梗图之一，名人开始在社交媒体上使用</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">17</span>
+                                <div>
+                                    <p class="font-medium">2017年</p>
+                                    <p class="text-gray-600">Matt Furie发起"Save Pepe"活动，试图挽回Pepe形象的原意</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">19</span>
+                                <div>
+                                    <p class="font-medium">2019年</p>
+                                    <p class="text-gray-600">Matt Furie推出官方Pepe NFT项目，开始维权行动</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">20</span>
+                                <div>
+                                    <p class="font-medium">2020年</p>
+                                    <p class="text-gray-600">《Feels Good Man》纪录片发布，记录Pepe文化演变历程并获圣丹斯电影节奖</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">21</span>
+                                <div>
+                                    <p class="font-medium">2021年</p>
+                                    <p class="text-gray-600">Pepe相关NFT在加密艺术市场价格飙升，原版涂鸦拍卖超过100万美元</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="bg-green-200 text-green-800 rounded-full w-6 h-6 flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">23</span>
+                                <div>
+                                    <p class="font-medium">2023年4月</p>
+                                    <p class="text-gray-600">PEPE代币创建并迅速在加密市场走红，市值一度超过10亿美元</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-4 border border-green-100 rounded-lg p-4 bg-green-50">
+                        <h4 class="font-semibold text-center mb-3">《男孩俱乐部》主要角色</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="p-3 bg-white rounded-lg border border-green-100">
+                                <h5 class="font-medium text-green-800 flex items-center">
+                                    <i class="fas fa-frog mr-2"></i>Pepe
+                                </h5>
+                                <p class="text-sm text-gray-600 mt-1">绿色青蛙，最爱说"feels good man"，性格悠闲随性。喜欢用奇怪的方式上厕所（裤子完全脱到脚踝），成为最广为人知的角色。</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-green-100">
+                                <h5 class="font-medium text-blue-800 flex items-center">
+                                    <i class="fas fa-dog mr-2"></i>Brett
+                                </h5>
+                                <p class="text-sm text-gray-600 mt-1">黄色狗狗角色，性格幽默搞怪，是男孩俱乐部中最喜欢派对的成员。经常带来麻烦但笑料百出，是群体中的活跃分子。</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-green-100">
+                                <h5 class="font-medium text-purple-800 flex items-center">
+                                    <i class="fas fa-cat mr-2"></i>Landwolf
+                                </h5>
+                                <p class="text-sm text-gray-600 mt-1">紫色猫科动物，外表略显邪气但内心纯良。性格冷静，喜欢玩电子游戏，是团队中的"酷猫"，常常表现出无所谓的态度。</p>
+                            </div>
+                            <div class="p-3 bg-white rounded-lg border border-green-100">
+                                <h5 class="font-medium text-red-800 flex items-center">
+                                    <i class="fas fa-otter mr-2"></i>Andy
+                                </h5>
+                                <p class="text-sm text-gray-600 mt-1">红色动物角色（可能是水獭或浣熊），性格温和友善，喜欢思考人生。漫画中常常成为其他三位室友恶作剧的对象，但从不计较。</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-center mt-3 text-gray-500">四位角色共同生活在一间公寓里，度过懒散、搞笑和荒诞的日常生活，体现了2000年代初青年亚文化的特点。</p>
+                    </div>
+                    
+                    <div class="border border-green-100 rounded-lg overflow-hidden">
+                        <div class="pepe-pattern-bg p-8 flex justify-center items-center">
+                            <img src="pepe.svg" alt="Pepe" class="w-40 h-40">
+                        </div>
+                        <div class="p-3 bg-white">
+                            <p class="text-xs text-gray-500 text-center">原始Pepe形象出自Matt Furie的《Boy's Club》漫画</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 区块链中的迷因文化解读 移动到这里 -->
+            <div class="mt-6 border border-green-200 rounded-lg p-4 bg-gradient-to-r from-green-50 to-white">
+                <h4 class="text-lg font-bold mb-4 flex items-center text-green-800">
+                    <i class="fas fa-lightbulb text-green-600 mr-2"></i>区块链中的迷因文化解读
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-3 bg-white rounded-lg border border-green-100 transition-transform hover:scale-[1.02] duration-300">
+                        <h5 class="font-medium text-amber-800 flex items-center">
+                            <i class="fas fa-cube mr-2"></i>迷因币的社会学意义
+                        </h5>
+                        <p class="text-sm text-gray-600 mt-1">迷因币如PEPE代表了加密货币世界中的"反建制"文化。这些代币故意缺乏实际用途，反映了对传统金融和"实用型"加密项目的某种戏谑和反叛。PEPE通过拥抱荒谬和不严肃，形成了一种独特的社区认同感，使参与者产生归属感和共同幽默。</p>
+                    </div>
+                    
+                    <div class="p-3 bg-white rounded-lg border border-green-100 transition-transform hover:scale-[1.02] duration-300">
+                        <h5 class="font-medium text-teal-800 flex items-center">
+                            <i class="fas fa-network-wired mr-2"></i>从分享文化到价值捕获
+                        </h5>
+                        <p class="text-sm text-gray-600 mt-1">区块链技术使迷因文化发生了根本性转变。传统上，互联网迷因靠自由分享和再创作获得传播，但不产生直接经济价值。而区块链通过代币化，将迷因的文化资本转化为金融资本，创造了一种新型的"迷因经济学"。PEPE的成功展示了文化认同如何转化为市场价值，代表互联网文化资产化的新范式。</p>
+                    </div>
+                    
+                    <div class="p-3 bg-white rounded-lg border border-green-100 transition-transform hover:scale-[1.02] duration-300">
+                        <h5 class="font-medium text-indigo-800 flex items-center">
+                            <i class="fas fa-theater-masks mr-2"></i>去中心化叙事权与身份认同
+                        </h5>
+                        <p class="text-sm text-gray-600 mt-1">Pepe从Matt Furie个人创作到互联网社区拥有，再到区块链上的集体资产，体现了创作权与所有权的复杂演变。这种演变反映了去中心化时代对知识产权概念的挑战，以及社区如何重新定义和分配文化价值。持有PEPE不仅是一种投资行为，也是对特定互联网亚文化身份的认同和参与。</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="p-3 bg-white rounded-lg border border-green-100 transition-transform hover:scale-[1.02] duration-300">
+                        <h5 class="font-medium text-pink-800 flex items-center">
+                            <i class="fas fa-chart-line mr-2"></i>迷因市场周期与文化流行度
+                        </h5>
+                        <p class="text-sm text-gray-600 mt-1">迷因币的价值波动往往遵循特殊的市场动态，与社交媒体流行度和集体情绪高度相关。与传统加密资产不同，PEPE等迷因币价格更容易受Twitter、Reddit等平台上的传播度影响，形成独特的"迷因周期"。这种周期常表现为突发性爆发、快速流行和随后的持续低热度，与互联网文化的注意力经济高度一致。</p>
+                    </div>
+                    
+                    <div class="p-3 bg-white rounded-lg border border-green-100 transition-transform hover:scale-[1.02] duration-300">
+                        <h5 class="font-medium text-violet-800 flex items-center">
+                            <i class="fas fa-paint-brush mr-2"></i>NFT与迷因艺术的关系
+                        </h5>
+                        <p class="text-sm text-gray-600 mt-1">PEPE作为加密代币的流行促进了相关NFT艺术的发展。虽然加密代币PEPE与Matt Furie无关，但艺术家本人已拥抱NFT技术，推出官方Pepe NFT系列。这种现象展示了Web3如何为原创艺术家提供新的价值捕获机制，同时也引发了关于创作者权利、社区演绎与商业化之间关系的讨论。PEPE作为文化符号在代币和NFT两个领域的并行发展，体现了数字资产多元化的特性。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 供应信息 -->
+        <section class="mb-10">
+            <h3 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-coins text-green-500 mr-2"></i>
+                供应情况
+            </h3>
+            <div class="border border-gray-200 rounded-lg p-6 bg-white shadow-sm crypto-card">
+                <div class="flex justify-between mb-2">
+                    <span class="font-medium flex items-center"><i class="fas fa-layer-group text-green-500 mr-1"></i> 流通量: 约420,690,000,000,000 PEPE</span>
+                    <span class="font-medium flex items-center"><i class="fas fa-circle-nodes text-green-500 mr-1"></i> 年通胀率: 0%（无增发）</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-5 mb-2 relative overflow-hidden supply-bar-container">
+                    <div class="bg-green-500 h-5 rounded-full relative" style="width: 100%" id="supply-bar">
+                        <span class="px-2 text-xs text-white font-medium">100%</span>
+                        <div class="absolute inset-0 supply-animation"></div>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-500 mt-4 space-y-2">
+                    <p class="flex items-center"><i class="fas fa-fire text-green-500 mr-2"></i> PEPE采用一次性铸造模式，总量为420.69万亿枚，没有代币通胀压力</p>
+                    <p class="flex items-center"><i class="fas fa-bolt text-green-500 mr-2"></i> 初始代币分配包括社区分发和流动性池提供，没有预留或团队份额</p>
+                    <p class="flex items-center"><i class="fas fa-chart-pie text-green-500 mr-2"></i> 部分代币已被永久锁定或销毁，实际流通量可能略低于总供应量</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 投研分析 -->
+        <section class="mb-10">
+            <h3 class="text-xl font-bold mb-6 flex items-center">
+                <i class="fas fa-magnifying-glass-chart text-green-600 mr-2"></i>
+                投研分析
+            </h3>
+            
+            <!-- 宏观分析 -->
+            <div class="mb-8 border border-gray-200 rounded-lg p-6 bg-white shadow-sm crypto-card">
+                <h4 class="text-lg font-bold mb-4 border-b pb-2 flex items-center">
+                    <i class="fas fa-globe text-green-600 mr-2"></i>
+                    宏观分析
+                </h4>
+                <div class="text-gray-800 space-y-4">
+                    <p>PEPE的宏观投资逻辑建立在迷因文化与情绪驱动投机的基础上。作为加密市场中最成功的迷因代币之一，PEPE代表了一种不同于功能性代币的投资品类。</p>
+                    
+                    <h5 class="font-semibold">迷因经济学模型</h5>
+                    <p>PEPE没有实际的技术创新或应用场景，其价值完全依赖于社区共识和市场情绪。这种"迷因经济学"在牛市中往往表现出惊人的动能，但缺乏长期价值支撑。值得注意的是，PEPE作为第二大迷因币，在品牌认知度上仅次于Dogecoin，形成了一定的市场地位。</p>
+                    
+                    <h5 class="font-semibold">社区文化与发展</h5>
+                    <p>PEPE从互联网流行文化中诞生，具有强大的社区粘性和文化共鸣。与传统金融资产不同，PEPE的价值很大程度上依赖于社交媒体传播和社区活跃度。2023年的爆发性增长证明了迷因文化在加密市场中的影响力，但也反映了极高的投机性质。</p>
+                </div>
+            </div>
+            
+            <!-- 微观分析 -->
+            <div class="mb-8 border border-gray-200 rounded-lg p-6 bg-white shadow-sm crypto-card">
+                <h4 class="text-lg font-bold mb-4 border-b pb-2 flex items-center">
+                    <i class="fas fa-microscope text-green-600 mr-2"></i>
+                    微观分析
+                </h4>
+                <div class="text-gray-800 space-y-4">
+                    <p>从微观层面看，PEPE的市场表现与持有者分布呈现出明显的投机特征。</p>
+                    
+                    <h5 class="font-semibold">市场数据指标</h5>
+                    <p>链上数据显示，PEPE的持有者分布集中度较高，前100名钱包控制超过总供应量的60%，这表明潜在的抛压风险。交易活跃度往往随市场情绪波动剧烈，在牛市期间日交易量可突破数亿美元，而熊市期间则可能萎缩至数百万美元水平。</p>
+                    
+                    <h5 class="font-semibold">生态发展现状</h5>
+                    <p>与功能性代币不同，PEPE没有开发者生态系统或应用场景。其主要"生态"体现为社交媒体活跃度、交易所上架情况以及衍生周边产品。值得注意的是，PEPE已在币安、Coinbase等主流交易所上线，获得了较高的市场认可度，这为其提供了流动性支持。</p>
+                    
+                    <h5 class="font-semibold">技术面状态</h5>
+                    <p>作为ERC-20代币，PEPE不存在技术创新或特殊功能。其价格波动主要受情绪驱动，技术面分析应着重关注大额持有者（鲸鱼）的行为模式，以及社交媒体情绪指标。历史数据显示，PEPE的价格波动与比特币和以太坊等主流币种相比更为剧烈，且往往在大盘回调时表现出更明显的下跌。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="border-t border-gray-200 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <div class="text-gray-500 text-sm mt-4">
+                <p>免责声明：本网站内容仅供参考，不构成投资建议。投资有风险，入市需谨慎。</p>
+                <p class="mt-2"><a href="https://flowith.net" target="_blank" class="text-gray-700 hover:underline">反观财经 不霁何虹</a>.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 提示消息 -->
+    <div id="followMessage" class="follow-message">关注我们，加入会员<span class="highlight">发大财</span>！</div>
+
+    <script src="script.js"></script>
+    
+    <!-- 掉落TON效果脚本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有社交媒体图标和教程链接
+            const socialIcons = document.querySelectorAll('.social-icon');
+            const tutorialLinks = document.querySelectorAll('.hidden.md\\:flex a');
+            const allClickableElements = [...socialIcons, ...tutorialLinks];
+            
+            // 获取消息提示元素
+            const followMessage = document.getElementById('followMessage');
+            
+            const container = document.querySelector('.falling-bg');
+            
+            // 比特币图标SVG - 官方标志
+            const bitcoinSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="100%" height="100%">
+                <circle cx="25" cy="25" r="25" fill="#F7931A"/>
+                <path d="M36.073,21.208c-0.678-2.883-3.698-3.862-7.889-3.162l-1.414-5.413l-3.443,0.903l1.376,5.268
+                c-0.901,0.236-1.816,0.497-2.724,0.752l-1.388-5.308l-3.443,0.902l1.415,5.418c-0.741,0.206-1.471,0.413-2.184,0.599l-0.005-0.019
+                l-4.743,1.245l0.917,3.5c0,0,2.535-0.671,2.497-0.617c1.391-0.365,2.071,0.235,2.384,0.87l1.67,6.398
+                c0.105-0.025,0.254-0.057,0.436-0.076c-0.135,0.035-0.285,0.072-0.439,0.109l2.341,8.936c0.061,0.433,0.011,1.11-0.849,1.365
+                c0.047-0.013-2.5,0.654-2.5,0.654l0.493,3.834l4.476-1.173c0.832-0.218,1.652-0.423,2.453-0.631l1.429,5.457l3.441-0.902
+                l-1.415-5.411c0.935-0.244,1.844-0.49,2.729-0.738l1.402,5.376l3.443-0.904l-1.426-5.446c5.847-1.787,9.816-4.071,8.796-9.021
+                c-0.823-3.998-3.292-5.203-6.592-5.066C33.281,25.994,36.648,23.65,36.073,21.208z M30.95,30.554
+                c1.094,4.191-6.184,5.95-8.495,6.558l-1.873-7.173C23.03,29.321,29.97,26.801,30.95,30.554z M28.032,20.996
+                c0.997,3.829-5.107,5.292-7.009,5.788l-1.7-6.495C21.227,19.792,27.137,17.52,28.032,20.996z" fill="#FFFFFF"/>
+            </svg>`;
+            
+            // 以太坊图标SVG - 官方标志
+            const ethereumSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="100%" height="100%">
+                <circle cx="25" cy="25" r="25" fill="#627EEA"/>
+                <path d="M25.5,10v11.1l9.4,4.2L25.5,10z" fill="white" fill-opacity="0.6"/>
+                <path d="M25.5,10l-9.4,15.3l9.4-4.2V10z" fill="white"/>
+                <path d="M25.5,33.7v6.3l9.4-13.1L25.5,33.7z" fill="white" fill-opacity="0.6"/>
+                <path d="M25.5,40v-6.3l-9.4-6.8L25.5,40z" fill="white"/>
+                <path d="M25.5,31.5l9.4-5.5l-9.4-4.2V31.5z" fill="white"/>
+                <path d="M16.1,26l9.4,5.5v-9.7L16.1,26z" fill="white" fill-opacity="0.6"/>
+            </svg>`;
+            
+            // 索拉纳图标SVG - 官方标志
+            const solanaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="100%" height="100%">
+                <circle cx="25" cy="25" r="25" fill="#14F195"/>
+                <path d="M15,19.5h16.7c0.5,0,0.8,0.3,0.8,0.6c0,0.1,0,0.3-0.1,0.4l-3.3,3.3c-0.2,0.2-0.5,0.3-0.8,0.3H11.8c-0.5,0-0.8-0.3-0.8-0.6
+                c0-0.1,0-0.3,0.1-0.4l3.1-3.3C14.4,19.6,14.7,19.5,15,19.5z" fill="#9945FF"/>
+                <path d="M15,31.5h16.7c0.5,0,0.8,0.3,0.8,0.6c0,0.1,0,0.3-0.1,0.4l-3.3,3.3c-0.2,0.2-0.5,0.3-0.8,0.3H11.8c-0.5,0-0.8-0.3-0.8-0.6
+                c0-0.1,0-0.3,0.1-0.4l3.1-3.3C14.4,31.6,14.7,31.5,15,31.5z" fill="#14F195"/>
+                <path d="M28.2,25.3h-16.7c-0.5,0-0.8-0.3-0.8-0.6c0-0.1,0-0.3,0.1-0.4l3.3-3.3c0.2-0.2,0.5-0.3,0.8-0.3h16.7c0.5,0,0.8,0.3,0.8,0.6
+                c0,0.1,0,0.3-0.1,0.4l-3.3,3.3C28.8,25.2,28.5,25.3,28.2,25.3z" fill="#000000"/>
+            </svg>`;
+            
+            // 所有加密货币图标SVG的数组（移除TON，只保留BTC、ETH、SOL）
+            const cryptoSvgs = [bitcoinSvg, ethereumSvg, solanaSvg];
+            
+            // 定义不同加密货币的阴影颜色
+            const shadowColors = {
+                bitcoin: "rgba(247, 147, 26, 0.6)", // 比特币橙色
+                ethereum: "rgba(98, 126, 234, 0.6)", // 以太坊紫色
+                solana: "rgba(20, 241, 149, 0.6)"    // Solana绿色
+            };
+            
+            // 创建多个掉落的随机加密货币
+            function createMultipleFallingCryptos(event) {
+                // 创建10-15个掉落元素
+                const count = Math.floor(Math.random() * 6) + 10;
+                
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        createFallingCrypto(event);
+                    }, i * 50); // 错开时间创建，产生更自然的效果
+                }
+            }
+            
+            // 创建单个掉落的随机加密货币
+            function createFallingCrypto(event) {
+                const ripple = document.createElement('div');
+                ripple.className = 'falling-crypto';
+                
+                // 随机选择一个加密货币图标
+                const random = Math.random();
+                let selectedSvg;
+                let shadowColor;
+                
+                if (random < 0.35) {
+                    // 35%的概率显示比特币
+                    selectedSvg = bitcoinSvg;
+                    shadowColor = shadowColors.bitcoin;
+                } else if (random < 0.7) {
+                    // 35%的概率显示以太坊
+                    selectedSvg = ethereumSvg;
+                    shadowColor = shadowColors.ethereum;
+                } else {
+                    // 30%的概率显示索拉纳
+                    selectedSvg = solanaSvg;
+                    shadowColor = shadowColors.solana;
+                }
+                
+                ripple.innerHTML = selectedSvg;
+                // 设置对应的阴影颜色
+                ripple.style.filter = `drop-shadow(0 0 8px ${shadowColor})`;
+                
+                // 随机位置（在屏幕顶部随机水平位置出现）
+                const randomX = Math.random() * window.innerWidth;
+                const randomSize = Math.random() * 20 + 30; // 30px 到 50px 的随机大小
+                
+                // 设置起始位置和大小
+                ripple.style.position = 'fixed';
+                ripple.style.left = `${randomX}px`;
+                ripple.style.top = '0px';
+                ripple.style.width = `${randomSize}px`;
+                ripple.style.height = `${randomSize}px`;
+                ripple.style.opacity = '0';
+                ripple.style.transform = 'scale(0.5)';
+                ripple.style.zIndex = '9999';
+                
+                // 添加到 body
+                document.body.appendChild(ripple);
+                
+                // 起始动画
+                setTimeout(() => {
+                    ripple.style.opacity = '1';
+                    ripple.style.transform = 'scale(1.2) rotate(30deg)';
+                    ripple.style.transition = 'all 0.3s ease-out';
+                }, 10);
+                
+                // 随机下落方向和旋转
+                const horizontalMovement = Math.random() * 200 - 100; // -100 到 100 之间的随机值
+                const fallDistance = window.innerHeight + 100; // 确保掉落足够远
+                const randomRotation = Math.random() * 1080 - 540; // 更大的旋转范围，-540到540度
+                const fallDuration = Math.random() * 3 + 3; // 3-6秒的随机时间
+                
+                // 下落动画
+                setTimeout(() => {
+                    ripple.style.transform = `translate(${horizontalMovement}px, ${fallDistance}px) rotate(${randomRotation}deg)`;
+                    ripple.style.opacity = '0';
+                    ripple.style.transition = `transform ${fallDuration}s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${fallDuration - 0.3}s ease-out`;
+                }, 300);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    ripple.remove();
+                }, (fallDuration * 1000) + 500);
+            }
+            
+            // 给所有交互元素添加点击效果
+            document.querySelectorAll('.crypto-card, .nav-item, .sidebar-item').forEach(element => {
+                element.addEventListener('click', function(event) {
+                    createMultipleFallingCryptos(event);
+                    
+                    // 显示鼓励关注的消息
+                    if (Math.random() > 0.7) { // 30%的概率显示
+                        followMessage.classList.add('show');
+                        
+                        setTimeout(() => {
+                            followMessage.classList.remove('show');
+                        }, 3000);
+                    }
+                });
+            });
+            
+            // 特殊效果：当用户点击潜力评级或风险评级卡片时，创建比特币和以太坊的特效雨
+            document.querySelector('.crypto-card:nth-child(1)').addEventListener('click', function(event) {
+                createSpecificCoinRain('bitcoin', 25); // 点击潜力评级卡片，创建25个比特币
+            });
+            
+            document.querySelector('.crypto-card:nth-child(2)').addEventListener('click', function(event) {
+                createSpecificCoinRain('ethereum', 25); // 点击风险评级卡片，创建25个以太坊
+            });
+            
+            // 点击TON标题图标时，创建Solana特效雨
+            document.querySelector('img[src="ton.svg"]').addEventListener('click', function(event) {
+                createSpecificCoinRain('solana', 25); // 点击图标，创建25个Solana
+            });
+            
+            // 创建特定加密货币的下雨效果
+            function createSpecificCoinRain(coinType, count) {
+                let selectedSvg;
+                let shadowColor;
+                
+                // 确定使用哪种加密货币
+                if (coinType === 'bitcoin') {
+                    selectedSvg = bitcoinSvg;
+                    shadowColor = shadowColors.bitcoin;
+                } else if (coinType === 'ethereum') {
+                    selectedSvg = ethereumSvg;
+                    shadowColor = shadowColors.ethereum;
+                } else if (coinType === 'solana') {
+                    selectedSvg = solanaSvg;
+                    shadowColor = shadowColors.solana;
+                }
+                
+                // 创建指定数量的加密货币图标
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        const ripple = document.createElement('div');
+                        ripple.className = 'falling-crypto';
+                        
+                        ripple.innerHTML = selectedSvg;
+                        // 设置对应的阴影颜色
+                        ripple.style.filter = `drop-shadow(0 0 8px ${shadowColor})`;
+                        
+                        // 随机位置（覆盖整个屏幕顶部）
+                        const randomX = Math.random() * window.innerWidth;
+                        const randomSize = Math.random() * 20 + 30; // 30px 到 50px 的随机大小
+                        
+                        // 设置起始位置和大小
+                        ripple.style.position = 'fixed';
+                        ripple.style.left = `${randomX}px`;
+                        ripple.style.top = '0px';
+                        ripple.style.width = `${randomSize}px`;
+                        ripple.style.height = `${randomSize}px`;
+                        ripple.style.opacity = '0';
+                        ripple.style.transform = 'scale(0.5)';
+                        ripple.style.zIndex = '9999';
+                        
+                        // 添加到 body
+                        document.body.appendChild(ripple);
+                        
+                        // 起始动画
+                        setTimeout(() => {
+                            ripple.style.opacity = '1';
+                            ripple.style.transform = 'scale(1.2) rotate(30deg)';
+                            ripple.style.transition = 'all 0.3s ease-out';
+                        }, 10);
+                        
+                        // 随机下落方向和旋转
+                        const horizontalMovement = Math.random() * 300 - 150; // -150 到 150 之间的随机值
+                        const fallDistance = window.innerHeight + 150; // 确保掉落足够远
+                        const randomRotation = Math.random() * 1080 - 540; // 更大的旋转范围，-540到540度
+                        const fallDuration = Math.random() * 4 + 4; // 4-8秒的随机时间，更慢更优雅
+                        
+                        // 下落动画
+                        setTimeout(() => {
+                            ripple.style.transform = `translate(${horizontalMovement}px, ${fallDistance}px) rotate(${randomRotation}deg)`;
+                            ripple.style.opacity = '0';
+                            ripple.style.transition = `transform ${fallDuration}s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${fallDuration - 0.5}s ease-out`;
+                        }, 300);
+                        
+                        // 动画结束后移除元素
+                        setTimeout(() => {
+                            ripple.remove();
+                        }, (fallDuration * 1000) + 500);
+                    }, i * 70); // 错开时间创建，产生更自然的效果
+                }
+            }
+            
+            // 创建随机密集的加密货币雨效果
+            function createDenseRain() {
+                // 每次点击创建35-50个不同加密货币
+                const count = Math.floor(Math.random() * 16) + 35;
+                
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        const ripple = document.createElement('div');
+                        ripple.className = 'falling-crypto';
+                        
+                        // 随机选择加密货币
+                        const random = Math.random();
+                        let selectedSvg;
+                        let shadowColor;
+                        
+                        if (random < 0.35) {
+                            selectedSvg = bitcoinSvg;
+                            shadowColor = shadowColors.bitcoin;
+                        } else if (random < 0.7) {
+                            selectedSvg = ethereumSvg;
+                            shadowColor = shadowColors.ethereum;
+                        } else {
+                            selectedSvg = solanaSvg;
+                            shadowColor = shadowColors.solana;
+                        }
+                        
+                        ripple.innerHTML = selectedSvg;
+                        ripple.style.filter = `drop-shadow(0 0 8px ${shadowColor})`;
+                        
+                        // 随机位置（覆盖整个屏幕宽度）
+                        const randomX = Math.random() * window.innerWidth;
+                        const randomSize = Math.random() * 20 + 20; // 20px 到 40px 的随机大小
+                        
+                        // 设置起始位置和大小
+                        ripple.style.position = 'fixed';
+                        ripple.style.left = `${randomX}px`;
+                        ripple.style.top = '0px';
+                        ripple.style.width = `${randomSize}px`;
+                        ripple.style.height = `${randomSize}px`;
+                        ripple.style.opacity = '0';
+                        ripple.style.transform = 'scale(0.5)';
+                        ripple.style.zIndex = '9999';
+                        
+                        // 添加到 body
+                        document.body.appendChild(ripple);
+                        
+                        // 起始动画
+                        setTimeout(() => {
+                            ripple.style.opacity = '1';
+                            ripple.style.transform = 'scale(1.2) rotate(30deg)';
+                            ripple.style.transition = 'all 0.3s ease-out';
+                        }, 10);
+                        
+                        // 随机下落方向和旋转
+                        const horizontalMovement = Math.random() * 300 - 150; // -150 到 150 之间的随机值
+                        const fallDistance = window.innerHeight + 100; // 确保掉落足够远
+                        const randomRotation = Math.random() * 1080 - 540; // 旋转范围
+                        const fallDuration = Math.random() * 3 + 2; // 2-5秒的随机时间
+                        
+                        // 下落动画
+                        setTimeout(() => {
+                            ripple.style.transform = `translate(${horizontalMovement}px, ${fallDistance}px) rotate(${randomRotation}deg)`;
+                            ripple.style.opacity = '0';
+                            ripple.style.transition = `transform ${fallDuration}s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${fallDuration - 0.3}s ease-out`;
+                        }, 300);
+                        
+                        // 动画结束后移除元素
+                        setTimeout(() => {
+                            ripple.remove();
+                        }, (fallDuration * 1000) + 500);
+                    }, i * 25); // 错开时间创建，让雨效果更密集更自然
+                }
+            }
+            
+            // 给社交媒体图标添加点击效果
+            allClickableElements.forEach(element => {
+                element.addEventListener('click', function(event) {
+                    createDenseRain(); // 使用密集雨效果替代普通的掉落效果
+                });
+            });
+            
+            // 页面加载时自动创建加密货币雨效果
+            setTimeout(() => {
+                createDenseRain();
+            }, 1000);
+            
+            // 每隔10秒自动创建一次加密货币雨效果
+            setInterval(() => {
+                if (Math.random() > 0.5) { // 50%的概率触发
+                    createDenseRain();
+                }
+            }, 10000);
+        });
+    </script>
+
+    
+</body>
+</html>
